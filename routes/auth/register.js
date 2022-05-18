@@ -1,17 +1,17 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const User = require("../../model/user");
+const User = require('../../model/user');
 
 module.exports = async (req, res) => {
 
     try {
       // Get user input
-      const { first_name, last_name, email, password } = req.body;
+      const { first_name, last_name, email, password, phone_number } = req.body;
 
       // Validate user input
-      if (!(email && password && first_name && last_name)) {
-        res.status(400).send("All fields are required");
+      if (!(email && password && first_name && last_name && phone_number)) {
+        return res.status(400).send("All fields are required");
       }
   
       // check if user already exist
@@ -30,6 +30,7 @@ module.exports = async (req, res) => {
             last_name,
             email: email.toLowerCase(), // sanitize: convert email to lowercase
             password: encryptedPassword,
+            phone_number
         });
     
         // Create token
