@@ -1,13 +1,16 @@
 require("dotenv").config();
-require("./config/database").connect();
 
 const express = require("express");
 const bodyParser = require('body-parser');
 
 const app = express();
 
+// const db = require('./queries')
+
+// app.get('/api/users', db.getUsers)
+
 app.use(express.json());
-app.use(bodyParser.urlencoded())
+app.use(express.urlencoded({ extended: true }));
 
 require("./routes")(app);
 

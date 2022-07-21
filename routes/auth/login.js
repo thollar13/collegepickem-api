@@ -3,7 +3,7 @@ require("dotenv").config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const User = require("../../model/user");  
+const pool = require('../../config/database')
 
 module.exports = async (req, res) => {
   try {
@@ -15,30 +15,44 @@ module.exports = async (req, res) => {
       res.status(400).send("All input is required");
     }
     // Validate if user exist in our database
-    const user = await User.findOne({ email });
+    const queryParams = `
+        SELECT first_name, last_name, email, phone_number, token, password
+        FROM collegepickems."Users"
+        WHERE email = $1`
 
-    // Check that passwords match 
-    const passwordMatch = await bcrypt.compare(password, user.password)
-    
-    if (user && passwordMatch) {
-      // Create token
-      const token = jwt.sign(
-        { user_id: user._id, email },
-        process.env.JWT_KEY,
-        {
-          expiresIn: "2h",
-        }
-      );
+    let result = await pool.query(queryParams, [email])
+    const user = result.rows[0]
 
-      // save user token
-      user.token = token;
+    if (user) {
+      // Check that passwords match 
+      const passwordMatch = await bcrypt.compare(password, user.password)
+      
+      if (user && passwordMatch) {
+        // Create token
+        const token = jwt.sign(
+          { user_id: email },
+          process.env.JWT_KEY,
+          {
+            expiresIn: "2h",
+          }
+        );
 
-      // user
-      res.status(200).json(user);
+        const updateToken = `
+          UPDATE collegepickems."Users"
+          SET token = $1
+          WHERE email = $2`
+
+        await pool.query(updateToken, [token, email])
+
+        user.token = token
+
+        res.status(200).json(user);
+      } else {
+          res.status(400).send("Invalid Credentials");
+      }
     } else {
-        res.status(400).send("Invalid Credentials");
+      res.status(400).send("User not found");
     }
-    
   } catch (err) {
     console.log(err);
     res.status(500).send("Something went wrong. Please contact support.")
