@@ -13,6 +13,9 @@ module.exports = async (req, res) => {
       if (!(email && password && first_name && last_name && phone_number)) {
         return res.status(400).send("All fields are required");
       }
+
+      //** NOT PRIORITY */
+      /// NEED TO CHECK IF PHONE NUMBER ALREADY EXISTS TOO
   
       // check if user already exist
       // Validate if user exist in our database

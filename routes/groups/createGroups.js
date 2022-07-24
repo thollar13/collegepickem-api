@@ -61,3 +61,11 @@ module.exports = async (req, res) => {
       res.status(500).send("Something went wrong. Please contact support.")
     }
 };
+
+// SELECT U.first_name, U.last_name, PG.name, PG.is_active, PGM.pending_activation
+// FROM collegepickems."PickemGroupMembers" PGM
+// INNER JOIN collegepickems."PickemGroups" PG
+// ON PG.id = PGM.pickem_group_id
+// FULL OUTER JOIN collegepickems."Users" U 
+// ON U.id = PGM.user_id
+// WHERE PGM.id = 2;
