@@ -18,8 +18,8 @@ module.exports = async (req, res) => {
             PG.is_active,
             PGM.is_admin,
             PG.is_private
-        FROM collegepickems."PickemGroupMembers" PGM
-        JOIN collegepickems."PickemGroups" PG
+        FROM collegepickems."GroupMembers" PGM
+        JOIN collegepickems."Groups" PG
         ON PG.id = PGM.pickem_group_id
         WHERE PGM.user_id = $1`
 

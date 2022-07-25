@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
             U.email,
             U.phone_number,
             PGM.is_admin
-        FROM collegepickems."PickemGroupMembers" PGM
+        FROM collegepickems."GroupMembers" PGM
         LEFT JOIN collegepickems."Users" U
         ON U.id = PGM.user_id
         WHERE PGM.pickem_group_id = $1`

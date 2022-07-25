@@ -22,24 +22,24 @@ module.exports = async (req, res) => {
       // Validate if user exist in our database
       const queryParams = `
         SELECT COUNT(name)
-        FROM collegepickems."PickemGroups"
+        FROM collegepickems."Groups"
         WHERE name = $1`
 
       const groupExists = await pool.query(queryParams, [name])
 
       if (groupExists.rows[0].count === '1') {
-        return res.status(409).send("Group Already Exists..")
+        return res.status(409).send("Group Already Exists.")
       } else {
       
         const queryType = is_private ? `
             with rows as (
-                INSERT INTO collegepickems."PickemGroups"(
+                INSERT INTO collegepickems."Groups"(
                 name, year, is_active, is_private, group_password)
             VALUES ($1, $2, true, true, $3)
             RETURNING id) SELECT id FROM rows;
         ` : `
             with rows as (
-                INSERT INTO collegepickems."PickemGroups"(
+                INSERT INTO collegepickems."Groups"(
                 name, year, is_active, is_private)
             VALUES ($1, $2, true, false)
             RETURNING id) SELECT id FROM rows;
@@ -66,11 +66,3 @@ module.exports = async (req, res) => {
       res.status(500).send("Something went wrong. Please contact support.")
     }
 };
-
-// SELECT U.first_name, U.last_name, PG.name, PG.is_active, PGM.pending_activation
-// FROM collegepickems."PickemGroupMembers" PGM
-// INNER JOIN collegepickems."PickemGroups" PG
-// ON PG.id = PGM.pickem_group_id
-// FULL OUTER JOIN collegepickems."Users" U 
-// ON U.id = PGM.user_id
-// WHERE PGM.id = 2;

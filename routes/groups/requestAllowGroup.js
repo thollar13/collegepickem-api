@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
       }
 
       const getGroupAdminIdQuery = `
-        SELECT id, user_id FROM collegepickems."PickemGroupMembers" 
+        SELECT id, user_id FROM collegepickems."GroupMembers" 
         WHERE pickem_group_id = $1 AND is_admin = true`
       const getGroupAdminIdResult = await pool.query(getGroupAdminIdQuery, [group_id])
       
@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
 
         /// NEED TO MAKE SURE A REQUEST RECORD EXISTS BEFORE UPDATING
         const getExistingRequestQuery = `
-          SELECT COUNT(*) FROM collegepickems."PickemGroupMembers"
+          SELECT COUNT(*) FROM collegepickems."GroupMembers"
           WHERE user_id = $1 
           AND pending_activation = true
           AND pickem_group_id = $2
@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
         } else {
           
           const updateRecordQuery = `
-          UPDATE collegepickems."PickemGroupMembers" 
+          UPDATE collegepickems."GroupMembers" 
           SET is_active=true, pending_activation=false 
           WHERE pickem_group_id = $1
           AND user_id = $2`

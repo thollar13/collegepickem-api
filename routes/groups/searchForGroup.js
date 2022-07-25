@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
     }
 
     const queryParams = `
-        SELECT id, is_active, name, year, is_private FROM collegepickems."PickemGroups"
+        SELECT id, is_active, name, year, is_private FROM collegepickems."Groups"
         WHERE name LIKE '%'||$1||'%'`
 
     pool.query(queryParams, [search_string], (error, results) => {
