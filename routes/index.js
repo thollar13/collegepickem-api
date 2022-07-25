@@ -13,6 +13,7 @@ const requestJoinGroup = require('./groups/requestJoinGroup');
 const requestAllowGroup = require('./groups/requestAllowGroup');
 const userGroups = require('./groups/getUserGroups');
 const userGroupMembers = require('./groups/getAllGroupMembers');
+const searchGroups = require('./groups/searchForGroup');
 
 module.exports = (app) => {
     // auth routes
@@ -29,6 +30,7 @@ module.exports = (app) => {
     app.use('/api/groups/allow', auth, requestAllowGroup);
     app.use('/api/groups/usersgroups', auth, userGroups);
     app.use('/api/groups/groupmembers', auth, userGroupMembers);
+    app.use('/api/groups/search', auth, searchGroups);
 
     // auth required routes
     app.use('/api/dashboard', auth, homeRoute);
