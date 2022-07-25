@@ -8,8 +8,8 @@ const getUsersRoute = require('./user/getUsers');
 
 const homeRoute = require('./dashboard/home');
 
-const createGroupRoute = require('./groups/createGroups');
-const requestJoinGroup = require('./groups/requestJoinGroup');
+const createGroupRoute = require('./groups/createGroup');
+const requestJoinPublicGroup = require('./groups/requestJoinPublicGroup');
 const requestAllowGroup = require('./groups/requestAllowGroup');
 const userGroups = require('./groups/getUserGroups');
 const userGroupMembers = require('./groups/getAllGroupMembers');
@@ -26,7 +26,7 @@ module.exports = (app) => {
     
     // pickem groups
     app.use('/api/groups/create', auth, createGroupRoute);
-    app.use('/api/groups/request', auth, requestJoinGroup);
+    app.use('/api/groups/public/request', auth, requestJoinPublicGroup);
     app.use('/api/groups/allow', auth, requestAllowGroup);
     app.use('/api/groups/usersgroups', auth, userGroups);
     app.use('/api/groups/groupmembers', auth, userGroupMembers);

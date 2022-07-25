@@ -40,8 +40,8 @@ module.exports = async (req, res) => {
 
         const insertQuery = `
           INSERT INTO collegepickems."Users"(
-            first_name, last_name, email, phone_number, token, password)
-          VALUES ($1, $2, $3, $4, $5, $6);
+            first_name, last_name, email, phone_number, token, password, created_at)
+          VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP);
         `
 
         const insertQueryValues = [first_name, last_name, email, phone_number, token, encryptedPassword]

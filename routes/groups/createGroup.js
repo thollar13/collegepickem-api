@@ -7,14 +7,15 @@ module.exports = async (req, res) => {
 
     try {
       // Get user input
-      const { name, year, user_id } = req.body;
-
-        console.log(name)
-        console.log(year)
+      const { name, year, user_id, is_private, group_password } = req.body;
 
       // Validate user input
-      if (!(name && year)) {
+      if (!(name && year && user_id && is_private)) {
         return res.status(400).send("All fields are required");
+      }
+
+      if (is_private && !group_password) {
+          return res.status(400).send("Private groups must have a pasword");
       }
   
       // check if user already exist
@@ -30,19 +31,23 @@ module.exports = async (req, res) => {
         return res.status(409).send("Group Already Exists..")
       } else {
       
-        const insertQuery = `
-          with rows as (
-              INSERT INTO collegepickems."PickemGroups"(
-            name, year, is_active)
-          VALUES ($1, $2, $3)
-          RETURNING id) SELECT id FROM rows;
-        `
+        const queryType = is_private ? `
+            with rows as (
+                INSERT INTO collegepickems."PickemGroups"(
+                name, year, is_active, is_private, group_password)
+            VALUES ($1, $2, true, true, $3)
+            RETURNING id) SELECT id FROM rows;
+        ` : `
+            with rows as (
+                INSERT INTO collegepickems."PickemGroups"(
+                name, year, is_active, is_private)
+            VALUES ($1, $2, true, false)
+            RETURNING id) SELECT id FROM rows;
+            `
 
-        console.log(insertQuery)
+        const insertQueryValues = is_private ? [name, year, group_password] : [name, year]
 
-        const insertQueryValues = [name, year, true]
-
-        const createGroup = await pool.query(insertQuery, insertQueryValues)
+        const createGroup = await pool.query(queryType, insertQueryValues)
 
         const insertIntoPickemGroupsMembers = `
             INSERT INTO collegepickems."PickemGroupMembers"(
