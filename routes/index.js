@@ -11,6 +11,8 @@ const homeRoute = require('./dashboard/home');
 const createGroupRoute = require('./groups/createGroups');
 const requestJoinGroup = require('./groups/requestJoinGroup');
 const requestAllowGroup = require('./groups/requestAllowGroup');
+const userGroups = require('./groups/getUserGroups');
+const userGroupMembers = require('./groups/getAllGroupMembers');
 
 module.exports = (app) => {
     // auth routes
@@ -25,6 +27,8 @@ module.exports = (app) => {
     app.use('/api/groups/create', auth, createGroupRoute);
     app.use('/api/groups/request', auth, requestJoinGroup);
     app.use('/api/groups/allow', auth, requestAllowGroup);
+    app.use('/api/groups/usersgroups', auth, userGroups);
+    app.use('/api/groups/groupmembers', auth, userGroupMembers);
 
     // auth required routes
     app.use('/api/dashboard', auth, homeRoute);

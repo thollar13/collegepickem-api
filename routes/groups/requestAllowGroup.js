@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
 
       if (groupRecord.rows[0].user_id !== user_id) {
           return res.status(409).send("Not authorized")
-        } else {
+      } else {
       
         const insertQuery = `
         UPDATE collegepickems."PickemGroupMembers"
