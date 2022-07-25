@@ -51,10 +51,10 @@ module.exports = async (req, res) => {
 
         const insertIntoPickemGroupsMembers = `
             INSERT INTO collegepickems."PickemGroupMembers"(
-                user_id, pickem_group_id, is_admin, is_active)
-            VALUES ($1, $2, $3, $4);`
+                user_id, pickem_group_id, is_admin, is_active, pending_activation)
+            VALUES ($1, $2, true, true, false);`
 
-        await pool.query(insertIntoPickemGroupsMembers, [user_id, createGroup.rows[0].id, true, true], (error, results) => {
+        await pool.query(insertIntoPickemGroupsMembers, [user_id, createGroup.rows[0].id], (error, results) => {
             if (error) {
               throw error
             }
