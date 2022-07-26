@@ -10,9 +10,11 @@ module.exports = async (req, res) => {
     // Get user input
     const { email, password } = req.body;
 
+    console.log(req.body)
+
     // Validate user input
     if (!(email && password)) {
-      res.status(400).send("All input is required");
+      return res.status(400).send("All input is required");
     }
     // Validate if user exist in our database
     const queryParams = `
@@ -48,13 +50,13 @@ module.exports = async (req, res) => {
 
         res.status(200).json(user);
       } else {
-          res.status(400).send("Invalid Credentials");
+          return res.status(400).send("Invalid Credentials");
       }
     } else {
-      res.status(400).send("User not found");
+      return res.status(400).send("User not found");
     }
   } catch (err) {
     console.log(err);
-    res.status(500).send("Something went wrong. Please contact support.")
+    return res.status(500).send("Something went wrong. Please contact support.")
   }
 };

@@ -15,6 +15,10 @@ const userGroups = require('./groups/getUserGroups');
 const userGroupMembers = require('./groups/getAllGroupMembers');
 const searchGroups = require('./groups/searchForGroup');
 
+const schoolsRoute = require('./schools/getAllSchools');
+
+const createGameRoute = require('./games/createGame');
+
 module.exports = (app) => {
     // auth routes
     app.use('/api/auth/login', loginRoute);
@@ -31,6 +35,12 @@ module.exports = (app) => {
     app.use('/api/groups/usersgroups', auth, userGroups);
     app.use('/api/groups/groupmembers', auth, userGroupMembers);
     app.use('/api/groups/search', auth, searchGroups);
+
+    // schools
+    app.use('/api/schools', schoolsRoute);
+
+    // games
+    app.use('/api/games/create', auth, createGameRoute);
 
     // auth required routes
     app.use('/api/dashboard', auth, homeRoute);
