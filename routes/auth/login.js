@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
     }
     // Validate if user exist in our database
     const queryParams = `
-        SELECT first_name, last_name, email, phone_number, token, password
+        SELECT id, first_name, last_name, email, phone_number, token, password
         FROM collegepickems."Users"
         WHERE email = $1`
 
@@ -32,7 +32,7 @@ module.exports = async (req, res) => {
       if (user && passwordMatch) {
         // Create token
         const token = jwt.sign(
-          { user_id: email },
+          { user_id: user.id },
           process.env.JWT_KEY,
           {
             expiresIn: "2h",

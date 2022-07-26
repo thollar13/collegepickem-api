@@ -14,6 +14,7 @@ const requestAllowGroup = require('./groups/requestAllowGroup');
 const userGroups = require('./groups/getUserGroups');
 const userGroupMembers = require('./groups/getAllGroupMembers');
 const searchGroups = require('./groups/searchForGroup');
+const getGroup = require('./groups/getGroup')
 
 const schoolsRoute = require('./schools/getAllSchools');
 
@@ -35,6 +36,7 @@ module.exports = (app) => {
     app.use('/api/groups/usersgroups', auth, userGroups);
     app.use('/api/groups/groupmembers', auth, userGroupMembers);
     app.use('/api/groups/search', auth, searchGroups);
+    app.use('/api/groups/:id', auth, getGroup);
 
     // schools
     app.use('/api/schools', schoolsRoute);

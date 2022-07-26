@@ -50,11 +50,11 @@ module.exports = async (req, res) => {
           if (error) {
             throw error
           }
-          res.status(201).json({ token });
+          return res.status(201).json({ email, token });
         })
       }
     } catch (err) {
       console.log(err);
-      res.status(500).send("Something went wrong. Please contact support.")
+      return res.status(500).send("Something went wrong. Please contact support.")
     }
 };
