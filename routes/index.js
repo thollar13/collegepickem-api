@@ -19,6 +19,9 @@ const getGroup = require('./groups/getGroup')
 const schoolsRoute = require('./schools/getAllSchools');
 
 const createGameRoute = require('./games/createGame');
+const getGamesByWeek = require('./games/getGamesByWeek');
+const getGameRoute = require('./games/getGame');
+const updateGameRoute = require('./games/updateGame')
 
 module.exports = (app) => {
     // auth routes
@@ -34,7 +37,7 @@ module.exports = (app) => {
     app.use('/api/groups/public/request', auth, requestJoinPublicGroup);
     app.use('/api/groups/allow', auth, requestAllowGroup);
     app.use('/api/groups/usersgroups', auth, userGroups);
-    app.use('/api/groups/groupmembers', auth, userGroupMembers);
+    app.use('/api/groups/:id/members', auth, userGroupMembers);
     app.use('/api/groups/search', auth, searchGroups);
     app.use('/api/groups/:id', auth, getGroup);
 
@@ -43,6 +46,9 @@ module.exports = (app) => {
 
     // games
     app.use('/api/games/create', auth, createGameRoute);
+    app.use('/api/games/week/:id', auth, getGamesByWeek);
+    app.use('/api/games/:id/update', auth, updateGameRoute);
+    app.use('/api/games/:id', auth, getGameRoute);
 
     // auth required routes
     app.use('/api/dashboard', auth, homeRoute);

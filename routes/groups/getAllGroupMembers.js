@@ -4,7 +4,7 @@ module.exports = async (req, res) => {
   try {
     
     // Get user input
-    const { group_id } = req.body;
+    const group_id = req.params.id;
 
     if (!(group_id)) {
         return res.status(400).send("All fields are required");
@@ -17,7 +17,9 @@ module.exports = async (req, res) => {
             U.last_name,
             U.email,
             U.phone_number,
-            PGM.is_admin
+            PGM.is_admin,
+            PGM.is_active,
+            PGM.pending_activation
         FROM collegepickems."GroupMembers" PGM
         LEFT JOIN collegepickems."Users" U
         ON U.id = PGM.user_id

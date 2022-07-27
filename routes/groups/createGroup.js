@@ -7,7 +7,13 @@ module.exports = async (req, res) => {
 
     try {
       // Get user input
-      const { name, year, user_id, is_private, group_password } = req.body;
+      const { name, year, is_private, group_password } = req.body;
+
+      const user_id = req.user.user_id;
+
+      if (!(user_id)) {
+          return res.status(400).send("Not Authorized");
+      }
 
       // Validate user input
       if (!(name && year && user_id && is_private)) {
@@ -50,7 +56,7 @@ module.exports = async (req, res) => {
         const createGroup = await pool.query(queryType, insertQueryValues)
 
         const insertIntoPickemGroupsMembers = `
-            INSERT INTO collegepickems."PickemGroupMembers"(
+            INSERT INTO collegepickems."GroupMembers"(
                 user_id, pickem_group_id, is_admin, is_active, pending_activation)
             VALUES ($1, $2, true, true, false);`
 
@@ -58,11 +64,11 @@ module.exports = async (req, res) => {
             if (error) {
               throw error
             }
-            res.status(201).json("success");
+            return res.status(201).json("success");
         })
       }
     } catch (err) {
       console.log(err);
-      res.status(500).send("Something went wrong. Please contact support.")
+      return res.status(500).send("Something went wrong. Please contact support.")
     }
 };
