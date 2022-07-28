@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
           { user_id: user.id },
           process.env.JWT_KEY,
           {
-            expiresIn: "2h",
+            expiresIn: "4h",
           }
         );
 

@@ -4,9 +4,9 @@ module.exports = async (req, res) => {
 
     try {
 
-      const { home_team_id, home_team_score, away_team_id, away_team_score, week_number, year, game_time } = req.body;
-
-      if (!(home_team_id && away_team_id && week_number )) {
+      const { home_team_id, home_team_score, away_team_id, away_team_score, week_id } = req.body;
+        console.log(req.body)
+      if (!(home_team_id && away_team_id && week_id )) {
         return res.status(400).send("All fields are required");
       }
 
@@ -16,10 +16,10 @@ module.exports = async (req, res) => {
       
         const insertGameQuery = `
             INSERT INTO collegepickems."Games"
-            (home_team, away_team, home_team_score, away_team_score, is_pickem_game, last_updated, created_at, week_number, year)
-            VALUES ($1, $2, $3, $4, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, $5, $6);`
+            (home_team, away_team, home_team_score, away_team_score, is_pickem_game, last_updated, created_at, week_id)
+            VALUES ($1, $2, $3, $4, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, $5);`
 
-        await pool.query(insertGameQuery, [home_team_id, away_team_id, home_team_score, away_team_score, week_number, 2022], (error, results) => {
+        await pool.query(insertGameQuery, [home_team_id, away_team_id, home_team_score, away_team_score, week_id], (error, results) => {
             if (error) {
               throw error
             }

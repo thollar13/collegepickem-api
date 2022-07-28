@@ -23,6 +23,9 @@ const getGamesByWeek = require('./games/getGamesByWeek');
 const getGameRoute = require('./games/getGame');
 const updateGameRoute = require('./games/updateGame')
 
+const getWeeksRoute = require('./weeks/getWeeks');
+const getWeeksGamesRoute = require('./weeks/getWeeksGames');
+
 module.exports = (app) => {
     // auth routes
     app.use('/api/auth/login', loginRoute);
@@ -43,6 +46,10 @@ module.exports = (app) => {
 
     // schools
     app.use('/api/schools', schoolsRoute);
+
+    // weeks 
+    app.use('/api/weeks/:id', getWeeksGamesRoute);
+    app.use('/api/weeks', getWeeksRoute);
 
     // games
     app.use('/api/games/create', auth, createGameRoute);
