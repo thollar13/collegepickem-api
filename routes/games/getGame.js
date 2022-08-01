@@ -20,8 +20,7 @@ module.exports = async (req, res) => {
         G.is_pickem_game,
         G.last_updated,
         G.created_at,
-        G.week_number,
-        G.year,
+        G.week_id,
         G.game_time,
         Home.name AS home_team_name,
         Away.name AS away_team_name

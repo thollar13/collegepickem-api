@@ -3,8 +3,8 @@ const pool = require('../../config/database')
 module.exports = async (req, res) => {
   try {
     
-    const { home_team_score, away_team_score } = req.body
-
+    const { home_team_score, away_team_score, winner_id } = req.body
+    console.log(winner_id)
     // Get user input
     const user_id = req.user.user_id;
 
@@ -16,10 +16,11 @@ module.exports = async (req, res) => {
     UPDATE collegepickems."Games"
     SET 
         home_team_score = $2,
-        away_team_score = $3
+        away_team_score = $3,
+        winner_id = $4
     WHERE id = $1`
 
-    pool.query(queryParams, [req.params.id, home_team_score, away_team_score], (error, results) => {
+    pool.query(queryParams, [req.params.id, home_team_score, away_team_score, winner_id], (error, results) => {
       if (error) {
           console.log(error)
         throw error

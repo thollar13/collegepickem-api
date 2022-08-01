@@ -13,24 +13,27 @@ module.exports = async (req, res) => {
     const queryParams = `
     SELECT 
         G.id,
-        G.home_team,
+        G.home_team AS home_team_id,
+		Home.name AS home_team_name,
         G.home_team_score,
-        G.away_team,
+        G.away_team AS away_team_id,
+        Away.name AS away_team_name,
         G.away_team_score,
         G.is_pickem_game,
         G.last_updated,
         G.created_at,
-        G.week_number,
-        G.year,
+        W.id as week_id,
+        W.year,
         G.game_time,
-        Home.name AS home_team_name,
-        Away.name AS away_team_name
+        G.winner_id
     FROM collegepickems."Games" G
     JOIN collegepickems."Schools" Home
     ON Home.id = G.home_team
     JOIN collegepickems."Schools" Away
     ON Away.id = G.away_team
-    WHERE G.week_number = $1`
+	JOIN collegepickems."Weeks" W
+	ON G.week_id = W.id
+    WHERE G.week_id = $1`
 
     pool.query(queryParams, [req.params.id], (error, results) => {
       if (error) {
