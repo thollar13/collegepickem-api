@@ -15,12 +15,17 @@ module.exports = async (req, res) => {
         G.id as game_id,
         G.home_team as home_team_id,
         S.name as home_team,
+        S.mascot as home_mascot,
         G.home_team_score,
         G.away_team as away_team_id,
         SA.name as away_team,
+        SA.mascot as away_mascot,
         G.away_team_score,
+        G.game_time,
+        S.city,
+        S.state,
+        S.stadium_name,
         G.winner_id,
-        (SELECT CASE WHEN EXISTS (SELECT * FROM collegepickems."Picks" P WHERE P.user_id = $1 AND p.game_id = G.id ) THEN 'TRUE' ELSE 'FALSE' END ) as has_picked,
         (SELECT P.user_pick FROM collegepickems."Picks" P WHERE P.user_id = $1 AND p.game_id = G.id)
     FROM collegepickems."Games" G
     JOIN collegepickems."Schools" S
