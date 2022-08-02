@@ -5,7 +5,7 @@ module.exports = async (req, res) => {
     try {
 
       const { home_team_id, home_team_score, away_team_id, away_team_score, week_id } = req.body;
-        console.log(req.body)
+        
       if (!(home_team_id && away_team_id && week_id )) {
         return res.status(400).send("All fields are required");
       }

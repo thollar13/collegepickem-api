@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
         FROM collegepickems."Users"
         WHERE email = $1`
 
-    let result = await pool.query(queryParams, [email])
+    let result = await pool.query(queryParams, [email.toLowerCase()])
     const user = result.rows[0]
 
     if (user) {

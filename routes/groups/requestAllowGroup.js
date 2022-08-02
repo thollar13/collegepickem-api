@@ -4,8 +4,9 @@ module.exports = async (req, res) => {
   
     try {
       // Get user input
-      const { user_id, group_id, requester_id } = req.body;
-
+      const { group_id, requester_id } = req.body;
+      const user_id = req.user.user_id;
+      
       // Validate user input
       if (!(user_id && group_id && requester_id)) {
         return res.status(400).send("All fields are required");

@@ -28,6 +28,9 @@ const getWeeksGamesRoute = require('./weeks/getWeeksGames');
 
 const updatePicksRoute = require('./picks/update');
 const getUserPicksByWeekRoute = require('./picks/getWeekPicks');
+const getAllWeeksRoute = require('./weeks/getAllWeeks');
+
+const getEntriesRoute = require('./entries/getEntries');
 
 module.exports = (app) => {
     // auth routes
@@ -51,6 +54,7 @@ module.exports = (app) => {
     app.use('/api/schools', schoolsRoute);
 
     // weeks 
+    app.use('/api/weeksall', auth, getAllWeeksRoute);
     app.use('/api/weeks/:id', getWeeksGamesRoute);
     app.use('/api/weeks', getWeeksRoute);
 
@@ -63,6 +67,8 @@ module.exports = (app) => {
     // picks
     app.use('/api/pickems/:weekId/picks', auth, getUserPicksByWeekRoute);
     app.use('/api/pickems/update', auth, updatePicksRoute);
+
+    app.use('/api/entries', auth, getEntriesRoute);
 
     // auth required routes
     app.use('/api/dashboard', auth, homeRoute);

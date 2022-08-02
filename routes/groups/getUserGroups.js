@@ -3,6 +3,7 @@ const pool = require('../../config/database')
 module.exports = async (req, res) => {
   try {
     
+      console.log(req.user)
     // Get user input
     const user_id = req.user.user_id;
 

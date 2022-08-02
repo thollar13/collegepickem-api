@@ -1,29 +1,27 @@
 const pool = require('../../config/database')
 
 module.exports = async (req, res) => {
-  try {
-    
-    // Get user input
-    const user_id = req.user.user_id;
 
-    if (!(user_id)) {
+    if (!(req.user.user_id)) {
         return res.status(400).send("Not Authorized");
     }
 
-    const queryParams = `
-        SELECT * FROM collegepickems."Groups" 
-        WHERE id = $1`
+    const queryPromise1 = () => {
+      return new Promise((resolve, reject) => {
+        const queryParams = `SELECT * FROM collegepickems."Groups" WHERE id = $1`;
+        pool.query(queryParams, [req.params.id], (error, results) => {
+          if (error) {
+            console.log(error)
+            return reject(error)
+          }
+          return resolve(results)
+        });
+      })
+    }
 
-    pool.query(queryParams, [req.params.id], (error, results) => {
-      if (error) {
-          console.log(error)
-        throw error
-      }
-
-      const groupData = results.rows[0]
-
-      const queryParams = `
-        SELECT 
+    const queryPromise2 = () => {
+      return new Promise((resolve, reject) => {
+        const queryParams = `SELECT 
             U.id,
             U.first_name,
             U.last_name,
@@ -35,22 +33,34 @@ module.exports = async (req, res) => {
         FROM collegepickems."GroupMembers" PGM
         LEFT JOIN collegepickems."Users" U
         ON U.id = PGM.user_id
-        WHERE PGM.pickem_group_id = $1`
-
-      pool.query(queryParams, [req.params.id], (error, results) => {
-        if (error) {
+        WHERE PGM.pickem_group_id = $1`;
+        pool.query(queryParams, [req.params.id], (error, results) => {
+          if (error) {
             console.log(error)
-          throw error
-        }
-
-        return res.status(200).json({
-          group: groupData,
-          members: results.rows
-        })
+            return reject(error)
+          }
+          return resolve(results)
+        });
       })
-    })
-  } catch (err) {
-    console.log(err);
-    return res.status(500).send("Something went wrong. Please contact support.")
+    }
+
+  async function sequentialQueries () {
+    try {
+      const groups = await queryPromise1();
+      const members = await queryPromise2();
+
+      const result = {
+        group: groups.rows[0],
+        members: members.rows
+      }
+      
+      return res.status(200).send(result)
+
+    } catch (error) {
+      console.log(error)
+      return res.status(500).send("Something went wrong. Please contact support.")
+    }
   }
+
+  sequentialQueries();
 };
