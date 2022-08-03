@@ -6,7 +6,7 @@ const pool = require('../../config/database')
 module.exports = async (req, res) => {
 
   const { name, year, is_private, group_password, entry_id } = req.body;
-
+console.log(entry_id)
   const user_id = req.user.user_id;
 
   if (!(user_id)) {
@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
   }
 
   // Validate user input
-  if (!(name && year && user_id && is_private)) {
+  if (!(name && year && user_id && is_private && entry_id)) {
     return res.status(400).send("All fields are required");
   }
 

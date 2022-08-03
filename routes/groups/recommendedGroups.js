@@ -8,7 +8,11 @@ module.exports = async (req, res) => {
 
     const queryPromise1 = () => {
       return new Promise((resolve, reject) => {
-        const queryParams = `SELECT * FROM collegepickems."Weeks" ORDER BY week ASC`;
+        const queryParams = `SELECT *,
+        (SELECT COUNT(*) FROM collegepickems."GroupEntries" GE WHERE GE.group_id = g.id) as group_size
+        FROM collegepickems."Groups" G
+        WHERE G.is_private = false
+        LIMIT 30`;
         pool.query(queryParams, (error, results) => {
           if (error) {
             console.log(error)
@@ -19,15 +23,12 @@ module.exports = async (req, res) => {
       })
     }
 
+
     async function sequentialQueries () {
         try {
-            const weeks = await queryPromise1();
+            const result = await queryPromise1();
 
-            const result = {
-                weeks: weeks.rows
-            }
-        
-            return res.status(200).send(result)
+            return res.status(200).send(result.rows)
 
         } catch (error) {
             console.log(error)

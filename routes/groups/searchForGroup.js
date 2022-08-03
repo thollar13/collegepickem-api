@@ -2,19 +2,31 @@ const pool = require('../../config/database')
 
 module.exports = async (req, res) => {
   try {
-    
-    // Get user input
-    const { search_string } = req.body;
 
-    if (!(search_string)) {
-        return res.status(400).send("All fields are required");
+    const { count, page } = req.query
+    if (!count || !page) {
+        res.status(400).send("Missing Query Parameters")
+    }
+
+    const countInt = parseInt(count)
+    const pageInt = parseInt(page)
+    const offset = countInt * pageInt
+
+    if (isNaN(countInt) || isNaN(pageInt)) {
+        return res.status(400).send('Invalid Value for Query Parameters' );
+    }
+
+    if (countInt <= 0 || pageInt < 0) {
+        return res.status(400).send('Query Parameters cannot contain negative value!' );
     }
 
     const queryParams = `
-        SELECT id, is_active, name, year, is_private FROM collegepickems."Groups"
-        WHERE name LIKE '%'||$1||'%'`
+        SELECT id, name FROM collegepickems."Groups" 
+        WHERE is_active = true
+        LIMIT $1
+        OFFSET $2`
 
-    pool.query(queryParams, [search_string], (error, results) => {
+    pool.query(queryParams, [countInt, offset], (error, results) => {
       if (error) {
           console.log(error)
         throw error

@@ -4,9 +4,11 @@ module.exports = async (req, res) => {
 
     try {
 
-      const { user_id, group_id } = req.body;
+      const { group_id, entry_id } = req.body;
+      const user_id = req.user.user_id;
 
-      if (!(user_id && group_id)) {
+      console.log(group_id, entry_id)
+      if (!(user_id && group_id && entry_id)) {
         return res.status(400).send("All fields are required");
       }
 
@@ -17,18 +19,18 @@ module.exports = async (req, res) => {
         return res.status(409).send("Attempting to join private group. Please enter password.")
       } else {
 
-        const checkIfRequestAlreadyExistsQuery = `SELECT COUNT(*)	FROM collegepickems."GroupMembers" WHERE user_id = $1 AND pickem_group_id = $2;`
-        const checkIfRequestAlreadyExistsResult = await pool.query(checkIfRequestAlreadyExistsQuery, [user_id, group_id])
+        const checkIfRequestAlreadyExistsQuery = `SELECT COUNT(*)	FROM collegepickems."GroupEntries" WHERE group_id = $1 AND entry_id = $2;`
+        const checkIfRequestAlreadyExistsResult = await pool.query(checkIfRequestAlreadyExistsQuery, [group_id, entry_id])
 
         if (checkIfRequestAlreadyExistsResult.rows[0].count === '1') {
-            return res.status(409).send("Invitation already pending.")
+            return res.status(409).send("You have already joined this group.")
           } else {
         
           const insertQuery = `
-          INSERT INTO collegepickems."GroupMembers" (user_id, pickem_group_id, is_admin, is_active, pending_activation)
-          VALUES ($1, $2, false, true, true);`
+          INSERT INTO collegepickems."GroupEntries" (user_id, group_id, is_admin, is_active, pending_activation, entry_id)
+          VALUES ($1, $2, false, true, false, $3);`
 
-          await pool.query(insertQuery, [user_id, group_id], (error, results) => {
+          await pool.query(insertQuery, [user_id, group_id, entry_id], (error, results) => {
               if (error) {
                 throw error
               }

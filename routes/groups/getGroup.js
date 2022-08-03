@@ -30,10 +30,10 @@ module.exports = async (req, res) => {
             PGM.is_admin,
             PGM.is_active,
             PGM.pending_activation
-        FROM collegepickems."GroupMembers" PGM
+        FROM collegepickems."GroupEntries" PGM
         LEFT JOIN collegepickems."Users" U
         ON U.id = PGM.user_id
-        WHERE PGM.pickem_group_id = $1`;
+        WHERE PGM.group_id = $1`;
         pool.query(queryParams, [req.params.id], (error, results) => {
           if (error) {
             console.log(error)
@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
         group: groups.rows[0],
         members: members.rows
       }
-      
+
       return res.status(200).send(result)
 
     } catch (error) {

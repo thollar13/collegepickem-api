@@ -9,8 +9,7 @@ module.exports = async (req, res) => {
     if (!(user_id)) {
         return res.status(400).send("Not Authorized");
     }
-    console.log('user id ', user_id)
-    console.log(req.params.weekId)
+    
     const queryParams = `
     SELECT
         G.id as game_id,
@@ -27,7 +26,11 @@ module.exports = async (req, res) => {
         S.state,
         S.stadium_name,
         G.winner_id,
-        (SELECT P.user_pick FROM collegepickems."Picks" P WHERE P.user_id = $1 AND p.game_id = G.id)
+        SA.primary_color AS away_primary_color,
+		SA.image_url AS away_image_url,
+		S.primary_color AS home_primary_color,
+		S.image_url AS home_image_url,
+        (SELECT P.user_pick FROM collegepickems."Picks" P WHERE P.entry_id = $1 AND p.game_id = G.id)
     FROM collegepickems."Games" G
     JOIN collegepickems."Schools" S
     ON S.id = G.home_team
@@ -35,7 +38,7 @@ module.exports = async (req, res) => {
     ON SA.id = G.away_team
     WHERE G.week_id = $2`
 
-    pool.query(queryParams, [user_id, req.params.weekId], (error, results) => {
+    pool.query(queryParams, [req.params.entryId, req.params.weekId], (error, results) => {
       if (error) {
           console.log(error)
         throw error

@@ -14,7 +14,8 @@ const requestAllowGroup = require('./groups/requestAllowGroup');
 const userGroups = require('./groups/getUserGroups');
 const userGroupMembers = require('./groups/getAllGroupMembers');
 const searchGroups = require('./groups/searchForGroup');
-const getGroup = require('./groups/getGroup')
+const getGroup = require('./groups/getGroup');
+const recommendedGroupsRoute = require('./groups/recommendedGroups');
 
 const schoolsRoute = require('./schools/getAllSchools');
 
@@ -31,6 +32,9 @@ const getUserPicksByWeekRoute = require('./picks/getWeekPicks');
 const getAllWeeksRoute = require('./weeks/getAllWeeks');
 
 const getEntriesRoute = require('./entries/getEntries');
+const getEntryRoute = require('./entries/getEntry');
+const getUserEntrieRoute = require('./entries/getUserEntries');
+const getOverallResultsRoute = require('./results/getOverallResults');
 
 module.exports = (app) => {
     // auth routes
@@ -46,6 +50,7 @@ module.exports = (app) => {
     app.use('/api/groups/public/request', auth, requestJoinPublicGroup);
     app.use('/api/groups/allow', auth, requestAllowGroup);
     app.use('/api/groups/usersgroups', auth, userGroups);
+    app.use('/api/groups/recommended', auth, recommendedGroupsRoute);
     app.use('/api/groups/:id/members', auth, userGroupMembers);
     app.use('/api/groups/search', auth, searchGroups);
     app.use('/api/groups/:id', auth, getGroup);
@@ -65,12 +70,18 @@ module.exports = (app) => {
     app.use('/api/games/:id', auth, getGameRoute);
 
     // picks
-    app.use('/api/pickems/:weekId/picks', auth, getUserPicksByWeekRoute);
+    app.use('/api/pickems/:weekId/picks/:entryId', auth, getUserPicksByWeekRoute);
     app.use('/api/pickems/update', auth, updatePicksRoute);
 
+    // entires
+    app.use('/api/entries/user', auth, getUserEntrieRoute);
     app.use('/api/entries', auth, getEntriesRoute);
+    app.use('/api/entry/:id', auth, getEntryRoute);
 
     // auth required routes
     app.use('/api/dashboard', auth, homeRoute);
+
+    // results
+    app.use('/api/results/overall', auth, getOverallResultsRoute);
   
 };

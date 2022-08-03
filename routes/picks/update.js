@@ -3,18 +3,19 @@ const pool = require('../../config/database')
 module.exports = async (req, res) => {
   try {
     
-    const { groupId, pickId, gameId } = req.body
+    const { entryId, pickId, gameId } = req.body
     
     // Get user input
     const user_id = req.user.user_id;
-    if (!(user_id || groupId || pickId || gameId)) {
+    if (!(user_id || entryId || pickId || gameId)) {
         return res.status(400).send("Not Authorized");
     }
 
+    console.log(entryId, gameId)
     const recordCheck = `SELECT 1 FROM collegepickems."Picks"
-    WHERE group_id = $1 AND user_id = $2 AND game_id = $3`
+    WHERE entry_id = $1 AND game_id = $2`
 
-    pool.query(recordCheck, [groupId, user_id, gameId], (error, results) => {
+    pool.query(recordCheck, [entryId, gameId], (error, results) => {
         if (error) {
             console.log(error)
             throw error
@@ -22,13 +23,13 @@ module.exports = async (req, res) => {
         let upsertQuery
 
         if (results.rows.length > 0) {
-            upsertQuery = `UPDATE collegepickems."Picks" SET group_id = $1, user_pick = $2, user_id = $3, game_id = $4
-            WHERE group_id = $1 AND user_id = $3 AND game_id = $4;`
+            upsertQuery = `UPDATE collegepickems."Picks" SET entry_id = $1, user_pick = $2, game_id = $3
+            WHERE entry_id = $1 AND game_id = $3;`
         } else {
-            upsertQuery = `INSERT INTO collegepickems."Picks" (group_id, user_pick, user_id, game_id) VALUES ($1, $2, $3, $4)`
+            upsertQuery = `INSERT INTO collegepickems."Picks" (entry_id, user_pick, game_id) VALUES ($1, $2, $3)`
         }
 
-        pool.query(upsertQuery, [groupId, pickId, user_id, gameId], (error, results) => {
+        pool.query(upsertQuery, [entryId, pickId, gameId], (error, results) => {
             if (error) {
                 console.log(error)
             throw error

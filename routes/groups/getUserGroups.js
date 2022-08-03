@@ -19,9 +19,9 @@ module.exports = async (req, res) => {
             PG.is_active,
             PGM.is_admin,
             PG.is_private
-        FROM collegepickems."GroupMembers" PGM
+        FROM collegepickems."GroupEntries" PGM
         JOIN collegepickems."Groups" PG
-        ON PG.id = PGM.pickem_group_id
+        ON PG.id = PGM.group_id
         WHERE PGM.user_id = $1`
 
     pool.query(queryParams, [user_id], (error, results) => {
