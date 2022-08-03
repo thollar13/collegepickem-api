@@ -21,19 +21,27 @@ module.exports = async (req, res) => {
 
     const queryPromise2 = () => {
       return new Promise((resolve, reject) => {
-        const queryParams = `SELECT 
-            U.id,
-            U.first_name,
-            U.last_name,
-            U.email,
-            U.phone_number,
-            PGM.is_admin,
-            PGM.is_active,
-            PGM.pending_activation
-        FROM collegepickems."GroupEntries" PGM
-        LEFT JOIN collegepickems."Users" U
-        ON U.id = PGM.user_id
-        WHERE PGM.group_id = $1`;
+        const queryParams = `SELECT
+            E.id as entry_id,
+            E.entry_name,
+            GE.is_active,
+            GE.pending_activation,
+            SUM(CASE WHEN G.winner_id = P.user_pick THEN 1 ELSE 0 END) as wins,
+            SUM(CASE WHEN G.winner_id != P.user_pick THEN 1 ELSE 0 END) as losses,
+            SUM(CASE WHEN G.winner_id = P.user_pick THEN 10 ELSE 0 END) as points,
+            SUM(CASE WHEN G.winner_id IS NOT null THEN 1 ELSE 0 END) as totalGames
+          FROM collegepickems."Games" G
+          JOIN collegepickems."Picks" P
+          ON P.game_id = G.id
+          JOIN collegepickems."Entries" E
+          ON E.id = P.entry_id
+          JOIN collegepickems."Users" U
+          ON U.id = E.user_id
+          JOIN collegepickems."GroupEntries" GE
+          ON GE.entry_id = E.id
+          WHERE GE.group_id = $1
+          GROUP BY E.id, E.entry_name, GE.is_active, GE.pending_activation
+          ORDER BY points DESC`;
         pool.query(queryParams, [req.params.id], (error, results) => {
           if (error) {
             console.log(error)

@@ -35,6 +35,7 @@ const getEntriesRoute = require('./entries/getEntries');
 const getEntryRoute = require('./entries/getEntry');
 const getUserEntrieRoute = require('./entries/getUserEntries');
 const getOverallResultsRoute = require('./results/getOverallResults');
+const getOverallGroupResultsRoute = require('./results/getOverallGroupResults');
 
 module.exports = (app) => {
     // auth routes
@@ -83,5 +84,6 @@ module.exports = (app) => {
 
     // results
     app.use('/api/results/overall', auth, getOverallResultsRoute);
+    app.use('/api/results/group/:id', auth, getOverallGroupResultsRoute);
   
 };
