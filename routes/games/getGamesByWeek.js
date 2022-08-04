@@ -33,7 +33,8 @@ module.exports = async (req, res) => {
     ON Away.id = G.away_team
 	JOIN collegepickems."Weeks" W
 	ON G.week_id = W.id
-    WHERE G.week_id = $1`
+    WHERE G.week_id = $1
+	ORDER BY G.game_time ASC`
 
     pool.query(queryParams, [req.params.id], (error, results) => {
       if (error) {
@@ -47,13 +48,3 @@ module.exports = async (req, res) => {
     return res.status(500).send("Something went wrong. Please contact support.")
   }
 };
-
-// SELECT
-// (SELECT name FROM collegepickems."Schools" WHERE id = 2) AS Away,
-// COALESCE(away_team_score, 0) AS AwayScore,
-// (SELECT name FROM collegepickems."Schools" WHERE id = 1) AS Home,
-// COALESCE(home_team_score, 0) AS HomeScore,
-// week_number,
-// year
-// FROM collegepickems."Games"
-// WHERE week_number = 1

@@ -1,65 +1,46 @@
-const pool = require('../../config/database')
+const pool = require('../../config/database');
 
 module.exports = async (req, res) => {
 
-    if (!(req.user.user_id)) {
-        return res.status(400).send("Not Authorized");
-    }
+  require('../../repositories/groups/getGroupsByIdRepository');
+  require('../../repositories/groups/getGroupEntriesByGroupIdRepository');
+  require('../../repositories/groups/getGroupOverallStandingsRepository');
+  
+  const userId = req.user.user_id
+  const groupId = req.params.id
 
-    const queryPromise1 = () => {
-      return new Promise((resolve, reject) => {
-        const queryParams = `SELECT * FROM collegepickems."Groups" WHERE id = $1`;
-        pool.query(queryParams, [req.params.id], (error, results) => {
-          if (error) {
-            console.log(error)
-            return reject(error)
-          }
-          return resolve(results)
-        });
-      })
-    }
-
-    const queryPromise2 = () => {
-      return new Promise((resolve, reject) => {
-        const queryParams = `SELECT
-            E.id as entry_id,
-            E.entry_name,
-            GE.is_active,
-            GE.pending_activation,
-            SUM(CASE WHEN G.winner_id = P.user_pick THEN 1 ELSE 0 END) as wins,
-            SUM(CASE WHEN G.winner_id != P.user_pick THEN 1 ELSE 0 END) as losses,
-            SUM(CASE WHEN G.winner_id = P.user_pick THEN 10 ELSE 0 END) as points,
-            SUM(CASE WHEN G.winner_id IS NOT null THEN 1 ELSE 0 END) as totalGames
-          FROM collegepickems."Games" G
-          JOIN collegepickems."Picks" P
-          ON P.game_id = G.id
-          JOIN collegepickems."Entries" E
-          ON E.id = P.entry_id
-          JOIN collegepickems."Users" U
-          ON U.id = E.user_id
-          JOIN collegepickems."GroupEntries" GE
-          ON GE.entry_id = E.id
-          WHERE GE.group_id = $1
-          GROUP BY E.id, E.entry_name, GE.is_active, GE.pending_activation
-          ORDER BY points DESC`;
-        pool.query(queryParams, [req.params.id], (error, results) => {
-          if (error) {
-            console.log(error)
-            return reject(error)
-          }
-          return resolve(results)
-        });
-      })
-    }
+  if (!(userId)) {
+      return res.status(400).send("Not Authorized");
+  }
 
   async function sequentialQueries () {
     try {
-      const groups = await queryPromise1();
-      const members = await queryPromise2();
+      const groups = await getGroupByGroupId(groupId);
+      const entries = await getGroupEntriesByGroupId(groupId);
+  
+      for (let index = 0; index < entries.rows.length; index++) {
+        const groupId = entries.rows[index].group_id
+        const entryId = entries.rows[index].entry_id
+        const entryStats = await getGroupOverallStandings(groupId, entryId)
 
+        entries.rows[index].wins = entryStats.rows.length > 0 ? parseInt(entryStats.rows[0].wins) : 0
+        entries.rows[index].losses = entryStats.rows.length > 0 ? parseInt(entryStats.rows[0].losses) : 0
+        entries.rows[index].points = entryStats.rows.length > 0 ? parseInt(entryStats.rows[0].points) : 0
+        entries.rows[index].rank = entryStats.rows.length > 0 ? entryStats.rows[0].rank : 0
+      }
+
+      entries.rows.sort((b, a) => parseInt(a.points) - parseInt(b.points))
+      var rank = 1;
+      for (var i = 0; i < entries.rows.length; i++) {
+        // increase rank only if current score less than previous
+        if (i > 0 && entries.rows[i].points < entries.rows[i - 1].points) {
+          rank++;
+        }
+        entries.rows[i].rank = rank;
+      }
       const result = {
         group: groups.rows[0],
-        members: members.rows
+        entries: entries.rows
       }
 
       return res.status(200).send(result)

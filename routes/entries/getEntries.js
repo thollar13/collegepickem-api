@@ -147,12 +147,12 @@ module.exports = async (req, res) => {
                     entries.rows[index].groups = []
                 }
 
-                entries.rows[index].wins = overallRecord.rows[0].wins
-                entries.rows[index].losses = overallRecord.rows[0].losses
-                entries.rows[index].points = overallRecord.rows[0].points
-                entries.rows[index].rank = overallRank
-                entries.rows[index].winPercentage = parseInt(winPercentage[0].wins) / parseInt(winPercentage[0].totalgames) * 100
-                entries.rows[index].totalentries = overallStandings.rows.length
+                entries.rows[index].wins = overallRecord.rows[0].wins || 0
+                entries.rows[index].losses = overallRecord.rows[0].losses || 0
+                entries.rows[index].points = overallRecord.rows[0].points || 0
+                entries.rows[index].rank = overallRank || '--'
+                entries.rows[index].winPercentage = '--' 
+                entries.rows[index].totalentries = overallStandings.rows.length || 0
             }
 
             const result = {

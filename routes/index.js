@@ -31,6 +31,7 @@ const updatePicksRoute = require('./picks/update');
 const getUserPicksByWeekRoute = require('./picks/getWeekPicks');
 const getAllWeeksRoute = require('./weeks/getAllWeeks');
 
+const editEntryRoute = require('./entries/editEntry');
 const getEntriesRoute = require('./entries/getEntries');
 const getEntryRoute = require('./entries/getEntry');
 const getUserEntrieRoute = require('./entries/getUserEntries');
@@ -77,6 +78,7 @@ module.exports = (app) => {
     // entires
     app.use('/api/entries/user', auth, getUserEntrieRoute);
     app.use('/api/entries', auth, getEntriesRoute);
+    app.use('/api/entry/:id/edit', auth, editEntryRoute);
     app.use('/api/entry/:id', auth, getEntryRoute);
 
     // auth required routes

@@ -3,7 +3,7 @@ const pool = require('../../config/database')
 module.exports = async (req, res) => {
   try {
     
-    const { home_team_score, away_team_score, winner_id } = req.body
+    const { home_team_score, away_team_score, winner_id, game_time } = req.body
     console.log(winner_id)
     // Get user input
     const user_id = req.user.user_id;
@@ -12,21 +12,41 @@ module.exports = async (req, res) => {
         return res.status(400).send("Not Authorized");
     }
 
-    const queryParams = `
-    UPDATE collegepickems."Games"
-    SET 
-        home_team_score = $2,
-        away_team_score = $3,
-        winner_id = $4
-    WHERE id = $1`
 
-    pool.query(queryParams, [req.params.id, home_team_score, away_team_score, winner_id], (error, results) => {
-      if (error) {
-          console.log(error)
-        throw error
-      }
-      return res.status(200).json(results.rows)
-    })
+    if (winner_id === 'null')  {
+      const queryParams = `
+        UPDATE collegepickems."Games"
+        SET 
+            home_team_score = $2,
+            away_team_score = $3,
+            game_time = $4
+        WHERE id = $1`
+      pool.query(queryParams, [req.params.id, home_team_score, away_team_score, game_time], (error, results) => {
+        if (error) {
+            console.log(error)
+          throw error
+        }
+        return res.status(200).json(results.rows)
+      })
+    } else {
+
+      const queryParams = `
+        UPDATE collegepickems."Games"
+        SET 
+            home_team_score = $2,
+            away_team_score = $3,
+            winner_id = $4,
+            game_time = $5
+        WHERE id = $1`
+        
+      pool.query(queryParams, [req.params.id, home_team_score, away_team_score, winner_id, game_time], (error, results) => {
+        if (error) {
+            console.log(error)
+          throw error
+        }
+        return res.status(200).json(results.rows)
+      })
+    }
   } catch (err) {
     console.log(err);
     return res.status(500).send("Something went wrong. Please contact support.")

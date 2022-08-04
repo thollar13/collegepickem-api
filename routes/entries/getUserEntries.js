@@ -28,7 +28,6 @@ module.exports = async (req, res) => {
     async function sequentialQueries () {
         try {
             let entries = await queryPromise1();
-            console.log(entries.rows)
             return res.status(200).send(entries.rows)
 
         } catch (error) {
