@@ -3,11 +3,11 @@ const Pool = require('pg').Pool
 let pool
 if(process.env.NODE_ENV === 'production') {
   pool = new Pool({
-    user: process.env.POSTGRE_DB_USER,
-    host: process.env.POSTGRE_DB_HOST,
-    database: process.env.POSTGRE_DB_DATABASE,
-    password: process.env.POSTGRE_DB_PASSWORD,
-    port: process.env.POSTGRE_DB_PORT,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
   })
 } else {
   pool = new Pool({
